@@ -13,6 +13,7 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 import bcrypt
+from flask import send_file
 
 # Initialize Flask app
 app = Flask(__name__, template_folder='template')
@@ -144,9 +145,13 @@ def download_and_send_email():
     df_filtered = df[atributos_seleccionados]
 
     excel_file_path = 'datos_solicitados_covid19_filtrado.xlsx'
-    df_filtered.to_excel(excel_file_path, index=False)
-    return render_template('dashboard.html', html_table=app.config['GLOBAL_VARIABLE'].to_html(classes='table table-striped'), mensaje="El archivo fue Descargado, Correo electrónico enviado con éxito y archivo Excel adjunto.", departamento_list=app.config['departamento_list'], ciudad_list=app.config['ciudad_list'], edad_list=app.config['edad_list'], sexo_list=app.config['sexo_list'], tipo_contagio_list=app.config['tipo_contagio_list'], ubicacion_list=app.config['ubicacion_list'], estado_list=app.config['estado_list'], pais_viajo_list=app.config['pais_viajo_list'], recuperado_list=app.config['recuperado_list'], fecha_report_list=app.config['fecha_report_list'])
-    # username = app.config['MAIL_USERNAME']
+    excel_data = df_filtered.to_excel(excel_file_path, index=False)
+    return send_file(
+        excel_data,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        attachment_filename='datos_solicitados_covid19_filtrado.xlsx'
+    )    # username = app.config['MAIL_USERNAME']
     # password = app.config['MAIL_PASSWORD']
     # mail_from = app.config['MAIL_USERNAME']
     # mail_to = "tecnoquark@gmail.com"
