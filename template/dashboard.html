@@ -84,7 +84,16 @@
         </section>
       </div>
     </div>
-
+    {% if mensaje %}
+    <div id="mensaje" class="alert {% if mensaje == 'El archivo fue Descargado, Correo electrónico enviado con éxito y archivo Excel adjunto.' %}alert-success{% else %}alert-danger{% endif %}" role="alert">{{ mensaje }}</div>
+    <script>
+        // Desaparecer el mensaje después de 10 segundos
+        setTimeout(function() {
+            var mensaje = document.getElementById("mensaje");
+            mensaje.style.display = "none";
+        }, 5000); // 10 segundos
+    </script>
+    {% endif %}
     <!-- Segunda sección: Dividida en dos verticalmente -->
     <div class="row">
       <div class="col-md-6">

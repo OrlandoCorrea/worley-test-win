@@ -99,7 +99,6 @@ def access_login():
         else:
             return render_template('index.html', mensaje="Credenciales Incorrectas")
             
-
 @app.route('/register_new', methods=["POST"])
 def register_new():
     if request.method == 'POST':
