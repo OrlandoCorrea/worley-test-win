@@ -146,12 +146,15 @@ def download_and_send_email():
 
     excel_file_path = 'datos_solicitados_covid19_filtrado.xlsx'
     excel_data = df_filtered.to_excel(excel_file_path, index=False)
-    return send_file(
-        excel_data,
-        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        as_attachment=True,
-        attachment_filename='datos_solicitados_covid19_filtrado.xlsx'
-    )    # username = app.config['MAIL_USERNAME']
+    # Devuelve el archivo Excel como una respuesta de descarga
+
+    try:
+        return send_file('./datos_solicitados_covid19_filtrado.xlsx', as_attachment=True)
+    except Exception as e:
+        return str(e)
+
+
+# username = app.config['MAIL_USERNAME']
     # password = app.config['MAIL_PASSWORD']
     # mail_from = app.config['MAIL_USERNAME']
     # mail_to = "tecnoquark@gmail.com"
