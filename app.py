@@ -14,6 +14,8 @@ from email.mime.base import MIMEBase
 from email import encoders
 import bcrypt
 from flask import send_file
+from io import BytesIO
+
 
 # Initialize Flask app
 app = Flask(__name__, template_folder='template')
@@ -147,45 +149,42 @@ def download_and_send_email():
     excel_file_path = 'datos_solicitados_covid19_filtrado.xlsx'
     excel_data = df_filtered.to_excel(excel_file_path, index=False)
     # Devuelve el archivo Excel como una respuesta de descarga
+    send_file('./datos_solicitados_covid19_filtrado.xlsx', as_attachment=True)
+
+    # Guarda los datos en un archivo Excel en memoria
+    excel_data_bytes = BytesIO()
+    df_filtered.to_excel(excel_data_bytes, index=False)
+    excel_data_bytes.seek(0)  # Reinicia el cursor al principio del archivo
+
+    username = app.config['MAIL_USERNAME']
+    password = app.config['MAIL_PASSWORD']
+    mail_from = app.config['MAIL_USERNAME']
+    mail_to = "tecnoquark@gmail.com"
+    mail_subject = "Adjunto: Informe Solicitado de Datos COVID-19"
+    mail_body = "Estimado/a,\n\nAdjunto encontrará el informe de datos actualizado sobre COVID-19 solicitado.\n\nSaludos cordiales,\nOrlando Correa"
+
+    mimemsg = MIMEMultipart()
+    mimemsg['From']=mail_from
+    mimemsg['To']=mail_to
+    mimemsg['Subject']=mail_subject
+    mimemsg.attach(MIMEText(mail_body, 'plain'))
+
+    # Adjuntar el archivo Excel al correo
+    part = MIMEBase('application', 'octet-stream')
+    part.set_payload((excel_data_bytes).read())
+    encoders.encode_base64(part)
+    part.add_header('Content-Disposition', "attachment; filename=datos_solicitados_covid19_filtrado.xlsx")
+    mimemsg.attach(part)
 
     try:
-        return send_file('./datos_solicitados_covid19_filtrado.xlsx', as_attachment=True)
+        context = ssl.create_default_context()
+        with smtplib.SMTP(host='smtp.gmail.com', port=587) as connection:
+            connection.starttls()
+            connection.login(username, password)
+            connection.send_message(mimemsg)
+            return render_template('dashboard.html', html_table=app.config['GLOBAL_VARIABLE'].to_html(classes='table table-striped'), mensaje="El archivo fue Descargado, Correo electrónico enviado con éxito y archivo Excel adjunto.", departamento_list=app.config['departamento_list'], ciudad_list=app.config['ciudad_list'], edad_list=app.config['edad_list'], sexo_list=app.config['sexo_list'], tipo_contagio_list=app.config['tipo_contagio_list'], ubicacion_list=app.config['ubicacion_list'], estado_list=app.config['estado_list'], pais_viajo_list=app.config['pais_viajo_list'], recuperado_list=app.config['recuperado_list'], fecha_report_list=app.config['fecha_report_list'])
     except Exception as e:
-        return str(e)
-
-
-# username = app.config['MAIL_USERNAME']
-    # password = app.config['MAIL_PASSWORD']
-    # mail_from = app.config['MAIL_USERNAME']
-    # mail_to = "tecnoquark@gmail.com"
-    # mail_subject = "Adjunto: Informe Solicitado de Datos COVID-19"
-    # mail_body = "Estimado/a,\n\nAdjunto encontrará el informe de datos actualizado sobre COVID-19 solicitado.\n\nSaludos cordiales,\nOrlando Correa"
-
-    # mimemsg = MIMEMultipart()
-    # mimemsg['From']=mail_from
-    # mimemsg['To']=mail_to
-    # mimemsg['Subject']=mail_subject
-    # mimemsg.attach(MIMEText(mail_body, 'plain'))
-
-    # # Adjuntar el archivo Excel al correo
-    # file_path = '.\\datos_solicitados_covid19_filtrado.xlsx'  # Ruta al archivo Excel que quieres adjuntar
-    # filename = 'datos_solicitados_covid19_filtrado.xlsx'  # Nombre del archivo adjunto
-    # attachment = open(file_path, "rb")
-    # part = MIMEBase('application', 'octet-stream')
-    # part.set_payload((attachment).read())
-    # encoders.encode_base64(part)
-    # part.add_header('Content-Disposition', "attachment; filename= %s" % filename)
-    # mimemsg.attach(part)
-
-    # try:
-    #     context = ssl.create_default_context()
-    #     with smtplib.SMTP(host='smtp.gmail.com', port=587) as connection:
-    #         connection.starttls()
-    #         connection.login(username, password)
-    #         connection.send_message(mimemsg)
-    #         return render_template('dashboard.html', html_table=app.config['GLOBAL_VARIABLE'].to_html(classes='table table-striped'), mensaje="El archivo fue Descargado, Correo electrónico enviado con éxito y archivo Excel adjunto.", departamento_list=app.config['departamento_list'], ciudad_list=app.config['ciudad_list'], edad_list=app.config['edad_list'], sexo_list=app.config['sexo_list'], tipo_contagio_list=app.config['tipo_contagio_list'], ubicacion_list=app.config['ubicacion_list'], estado_list=app.config['estado_list'], pais_viajo_list=app.config['pais_viajo_list'], recuperado_list=app.config['recuperado_list'], fecha_report_list=app.config['fecha_report_list'])
-    # except Exception as e:
-    #         return render_template('dashboard.html', html_table=app.config['GLOBAL_VARIABLE'].to_html(classes='table table-striped'), mensaje="El archivo fue Descargado, pero hubo Error en el envío del Archivo Excel al Correo Electronico, revisa que hayas seleccionado algun atributo y dale generar neuvamente", departamento_list=app.config['departamento_list'], ciudad_list=app.config['ciudad_list'], edad_list=app.config['edad_list'], sexo_list=app.config['sexo_list'], tipo_contagio_list=app.config['tipo_contagio_list'], ubicacion_list=app.config['ubicacion_list'], estado_list=app.config['estado_list'], pais_viajo_list=app.config['pais_viajo_list'], recuperado_list=app.config['recuperado_list'], fecha_report_list=app.config['fecha_report_list'])
+            return render_template('dashboard.html', html_table=app.config['GLOBAL_VARIABLE'].to_html(classes='table table-striped'), mensaje="El archivo fue Descargado, pero hubo Error en el envío del Archivo Excel al Correo Electronico, revisa que hayas seleccionado algun atributo y dale generar neuvamente", departamento_list=app.config['departamento_list'], ciudad_list=app.config['ciudad_list'], edad_list=app.config['edad_list'], sexo_list=app.config['sexo_list'], tipo_contagio_list=app.config['tipo_contagio_list'], ubicacion_list=app.config['ubicacion_list'], estado_list=app.config['estado_list'], pais_viajo_list=app.config['pais_viajo_list'], recuperado_list=app.config['recuperado_list'], fecha_report_list=app.config['fecha_report_list'])
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=8000)
