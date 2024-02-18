@@ -64,4 +64,4 @@ jobs:
         with:
           app-name: 'worley-test-winner'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4FCB9C25611F40D3880783A564A47CB6 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_0A3E6CEAF9C04ACE8FF55C709E40BF28 }}
