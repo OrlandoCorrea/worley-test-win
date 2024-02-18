@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/bbf8d728-ef7c-4d58-9e17-4814730c4ca1/resourceGroups/worley-resource-covid19/providers/Microsoft.Web/sites/worley-win-job-ofcv",
+    "appService.deploySubpath": "."
+}

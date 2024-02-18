@@ -21,7 +21,7 @@ app.secret_key = os.urandom(24)
 # Load environment variables
 load_dotenv()
 
-app.config['MYSQL_HOST'] ='worley-covid19.mysql.database.azure.com'
+app.config['MYSQL_HOST'] ='worley-db-covid19.mysql.database.azure.com'
 app.config['MYSQL_USER'] ='admin_ofcv'
 app.config['MYSQL_PASSWORD'] ='Clave123'
 app.config['MYSQL_DB'] ='worley-schema-covid19'
@@ -181,4 +181,4 @@ def download_and_send_email():
             return render_template('dashboard.html', html_table=app.config['GLOBAL_VARIABLE'].to_html(classes='table table-striped'), mensaje="El archivo fue Descargado, pero hubo Error en el envío del Archivo Excel al Correo Electronico, revisa que hayas seleccionado algun atributo y dale generar neuvamente", departamento_list=app.config['departamento_list'], ciudad_list=app.config['ciudad_list'], edad_list=app.config['edad_list'], sexo_list=app.config['sexo_list'], tipo_contagio_list=app.config['tipo_contagio_list'], ubicacion_list=app.config['ubicacion_list'], estado_list=app.config['estado_list'], pais_viajo_list=app.config['pais_viajo_list'], recuperado_list=app.config['recuperado_list'], fecha_report_list=app.config['fecha_report_list'])
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=8000)
