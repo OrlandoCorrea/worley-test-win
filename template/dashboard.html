@@ -3,17 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Worley - COVID19 COLOMBIA</title>
+  <title>Dashboard</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-
   <style>
     body {
-      background-color: #f8f9fa;
       font-family: Arial, sans-serif;
     }
-    .section {
-      height: calc(100vh - 20px);
+    .sub-section {
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      padding: 10px;
     }
     .table-container {
             margin: 0 auto; /* Centrar horizontalmente */
@@ -21,41 +21,6 @@
             overflow-x: auto; /* Permitir scroll horizontal */
             max-height: 500px; /* Altura máxima */
             overflow-y: auto; /* Permitir scroll vertical */
-        }
-    .checkbox-label {
-      color: #495057;
-    }
-    .table-title {
-      color: #495057;
-      margin-bottom: 20px;
-    }
-    .form-check-input[type="checkbox"] {
-      height: 20px;
-      width: 20px;
-      margin-right: 5px;
-    }
-    .form-check-label {
-      font-weight: 400;
-    }
-    .form-check-input:checked + .form-check-label::before {
-      content: '';
-      width: 16px;
-      height: 16px;
-      background-color: #007bff;
-      display: inline-block;
-      position: relative;
-      top: 4px;
-      left: 0;
-      border-radius: 3px;
-    }
-    h1 {
-      font-size: 36px;
-      font-weight: bold;
-      color: #007bff;
-      text-align: center;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      margin-bottom: 5px;
     }
     .table {
       width: 100%;
@@ -77,252 +42,256 @@
     .table tbody tr:nth-child(even) {
       background-color: #e5e5e5;
     }
-    .section-padding-top {
-      padding-top: 20px; /* Ajusta el valor según tus necesidades */
+
+    .checkbox-label {
+      color: #495057;
     }
-    .section-padding-left {
-      padding-left: 50px; /* Ajusta el valor según tus necesidades */
+    h3 {
+      text-align: center;
     }
-    .form-submit {
-      display: flex;
-      justify-content: center;
+    h2 {
+      text-align: center;
+      font-weight: bold;
+      color: #007bff;
+      text-align: center;
+      text-transform: capitalize;
+      letter-spacing: 2px;
+      margin-bottom: 5px;
     }
-    .submit-button {
-      font-size: 20px; /* Tamaño del botón */
-      padding: 10px 20px; /* Ajuste del relleno */
+    h4 {
+      text-align: center;
     }
-    .contenedor{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-    }
-    .form-group select {
-      font-size: 8px; /* Tamaño de la fuente */
-      padding: 5px; /* Espaciado interno */
+    h1 {
+      font-size: 36px;
+      font-weight: bold;
+      color: #007bff;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 5px;
     }
   </style>
 </head>
 <body>
-  <div class="container-fluid">
+
+  <!-- Primera sección: Título de la dashboard -->
+  <div class="container">
     <div class="row">
-      <!-- Primera sección -->
-      <div class="col-md-6 align-items-center justify-content-center section-padding-top" style="height: 100vh; ">
-        <!-- Título centrado horizontal y verticalmente -->
-              <section>
-                <h1>DATOS COVID19 COLOMBIA</h1>
-                <h2 style="font-style:italic;">
-                  Seleccione los datos que desea buscar
-              </h2>
-              <br/>
-              <form class="form-control" action="search_data" method="post">
-                <div class="form__group row row-cols-2">
+      <div class="col">
+        <section class="section">
+            <br/>
+          <h1 class="text-center">DATOS COVID19 EN COLOMBIA</h1>
+        </section>
+      </div>
+    </div>
+
+    <!-- Segunda sección: Dividida en dos verticalmente -->
+    <div class="row">
+      <div class="col-md-6">
+        <section class="section">
+            <div class="sub-section">
+            <h4>Seleccione los datos que desea buscar</h4>
+            <form class="form-control" action="search_data" method="post">
+              <div class="form__group row row-cols-2">
+                <div class="col">
+                  <select id="departamento" name="departamento" data-dropdown class="form-control">
+                    <option value>Seleccione el Departamento</option>
+                    {% for departamento in departamento_list %}
+                    <option value="{{ departamento }}">{{ departamento }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col">
+                  <select id="ciudad" name="ciudad" data-dropdown class="form-control">
+                    <option value>Seleccione la Ciudad</option>
+                    {% for ciudad in ciudad_list %}
+                    <option value="{{ ciudad }}">{{ ciudad }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form__group row row-cols-2">
+                <div class="col">
+                  <select id="edad" name="edad" data-dropdown class="form-control">
+                    <option value>Seleccione la edad</option>
+                    {% for edad in edad_list %}
+                    <option value="{{ edad }}">{{ edad }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col">
+                  <select id="sexo" name="sexo" data-dropdown class="form-control">
+                    <option value>Seleccione Sexo</option>
+                    {% for sexo in sexo_list %}
+                    <option value="{{ sexo }}">{{ sexo }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form__group row row-cols-2">
+                <div class="col">
+                  <select id="fuente_contagio" name="fuente_contagio" data-dropdown class="form-control">
+                    <option value>Seleccione Fuente de Contagio</option>
+                    {% for fuente_contagio in tipo_contagio_list %}
+                    <option value="{{ fuente_contagio }}">{{ fuente_contagio }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col">
+                  <select id="ubicacion" name="ubicacion" data-dropdown class="form-control">
+                    <option value>Seleccione Ubicacion</option>
+                    {% for ubicacion in ubicacion_list %}
+                    <option value="{{ ubicacion }}">{{ ubicacion }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form__group row row-cols-2">
+                <div class="col">
+                  <select id="estado" name="estado" data-dropdown class="form-control">
+                    <option value>Seleccione Estado</option>
+                    {% for estado in estado_list %}
+                    <option value="{{ estado }}">{{ estado }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col">
+                  <select id="pais_viaje" name="pais_viaje" data-dropdown class="form-control">
+                    <option value>Seleccione Pais de Viaje</option>
+                    {% for pais_viaje in pais_viajo_list %}
+                    <option value="{{ pais_viaje }}">{{ pais_viaje }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class="form__group row row-cols-2">
+                <div class="col">
+                  <select id="recuperado" name="recuperado" data-dropdown class="form-control">
+                    <option value>Seleccione Recuperado</option>
+                    {% for recuperado in recuperado_list %}
+                    <option value="{{ recuperado }}">{{ recuperado }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col">
+                  <select id="fecha_report" name="fecha_report" data-dropdown class="form-control">
+                    <option value>Seleccione Fecha Reporte</option>
+                    {% for fecha_report in fecha_report_list %}
+                    <option value="{{ fecha_report }}">{{ fecha_report }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div><br/>
+              <center>
+                <div class="contenedor">
                   <div class="col">
-                    <select id="departamento" name="departamento" data-dropdown class="form-control">
-                      <option value>Seleccione el Departamento</option>
-                      {% for departamento in departamento_list %}
-                      <option value="{{ departamento }}">{{ departamento }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  <div class="col">
-                    <select id="ciudad" name="ciudad" data-dropdown class="form-control">
-                      <option value>Seleccione la Ciudad</option>
-                      {% for ciudad in ciudad_list %}
-                      <option value="{{ ciudad }}">{{ ciudad }}</option>
-                      {% endfor %}
-                    </select>
+                    <button type="submit" class="btn btn-primary submit-button">Buscar Datos</button>
                   </div>
                 </div>
-                <div class="form__group row row-cols-2">
+              </center>
+            </form><br/>
+        </section>
+      </div>
+      <div class="col-md-6">
+        <section class="section">
+          <div class="sub-section">
+            <h4>Deseleccione los atributos que no desea para su Descarga de información</h4>
+            <br/>
+            <form id="attributesForm" class="section-padding-left " action="download_and_send_email" method="post">
+                <div class="row row-cols-2">
                   <div class="col">
-                    <select id="edad" name="edad" data-dropdown class="form-control">
-                      <option value>Seleccione la edad</option>
-                      {% for edad in edad_list %}
-                      <option value="{{ edad }}">{{ edad }}</option>
-                      {% endfor %}
-                    </select>
+                    <div class="form-check">
+                      <input class="form-check-input" name="atributo" type="checkbox" id="Departamento" value="departamento_nom" checked>
+                      <label class="form-check-label" for="Departamento">Departamento</label>
+                    </div>
                   </div>
                   <div class="col">
-                    <select id="sexo" name="sexo" data-dropdown class="form-control">
-                      <option value>Seleccione Sexo</option>
-                      {% for sexo in sexo_list %}
-                      <option value="{{ sexo }}">{{ sexo }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                </div>
-                <div class="form__group row row-cols-2">
-                  <div class="col">
-                    <select id="fuente_contagio" name="fuente_contagio" data-dropdown class="form-control">
-                      <option value>Seleccione Fuente de Contagio</option>
-                      {% for fuente_contagio in tipo_contagio_list %}
-                      <option value="{{ fuente_contagio }}">{{ fuente_contagio }}</option>
-                      {% endfor %}
-                    </select>
-                  </div>
-                  <div class="col">
-                    <select id="ubicacion" name="ubicacion" data-dropdown class="form-control">
-                      <option value>Seleccione Ubicacion</option>
-                      {% for ubicacion in ubicacion_list %}
-                      <option value="{{ ubicacion }}">{{ ubicacion }}</option>
-                      {% endfor %}
-                    </select>
+                    <div class="form-check">
+                      <input class="form-check-input" name="atributo" type="checkbox" id="Ciudad" value="ciudad_municipio_nom" checked>
+                      <label class="form-check-label" for="Ciudad">Ciudad</label>
+                    </div>
                   </div>
                 </div>
-                <div class="form__group row row-cols-2">
+                <div class="row row-cols-2">
                   <div class="col">
-                    <select id="estado" name="estado" data-dropdown class="form-control">
-                      <option value>Seleccione Estado</option>
-                      {% for estado in estado_list %}
-                      <option value="{{ estado }}">{{ estado }}</option>
-                      {% endfor %}
-                    </select>
+                    <div class="form-check">
+                      <input class="form-check-input" name="atributo" type="checkbox" id="edad" value="edad" checked>
+                      <label class="form-check-label" for="Edad">Edad</label>
+                    </div>
                   </div>
                   <div class="col">
-                    <select id="pais_viaje" name="pais_viaje" data-dropdown class="form-control">
-                      <option value>Seleccione Pais de Viaje</option>
-                      {% for pais_viaje in pais_viajo_list %}
-                      <option value="{{ pais_viaje }}">{{ pais_viaje }}</option>
-                      {% endfor %}
-                    </select>
+                    <div class="form-check">
+                      <input class="form-check-input" name="atributo" type="checkbox" id="sexo" value="sexo" checked>
+                      <label class="form-check-label" for="Sexo">Sexo</label>
+                    </div>
                   </div>
                 </div>
-                <div class="form__group row row-cols-2">
+                <div class="row row-cols-2">
                   <div class="col">
-                    <select id="recuperado" name="recuperado" data-dropdown class="form-control">
-                      <option value>Seleccione Recuperado</option>
-                      {% for recuperado in recuperado_list %}
-                      <option value="{{ recuperado }}">{{ recuperado }}</option>
-                      {% endfor %}
-                    </select>
+                    <div class="form-check">
+                      <input class="form-check-input" name="atributo" type="checkbox" id="Contagio" value="fuente_tipo_contagio" checked>
+                      <label class="form-check-label" for="Contagio">Fuente Contagio</label>
+                    </div>
                   </div>
                   <div class="col">
-                    <select id="fecha_report" name="fecha_report" data-dropdown class="form-control">
-                      <option value>Seleccione Fecha Reporte</option>
-                      {% for fecha_report in fecha_report_list %}
-                      <option value="{{ fecha_report }}">{{ fecha_report }}</option>
-                      {% endfor %}
-                    </select>
+                    <div class="form-check">
+                      <input class="form-check-input" name="atributo" type="checkbox" id="Ubicacion" value="ubicacion" checked>
+                      <label class="form-check-label" for="Ubicacion">Ubicación</label>
+                    </div>
                   </div>
-                </div><br/>
+                </div>
+                <div class="row row-cols-2">
+                  <div class="col">
+                    <div class="form-check">
+                      <input class="form-check-input" name="atributo" type="checkbox" id="Estado" value="estado" checked>
+                      <label class="form-check-label" for="Estado">Estado</label>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-check">
+                      <input class="form-check-input" name="atributo" type="checkbox" id="pais_viaje" value="pais_viajo_1_nom" checked>
+                      <label class="form-check-label" for="pais_viaje">Pais que Viajo</label>
+                    </div>
+                  </div>
+                  <!-- Repite para los 14 atributos -->
+                </div>
+                <div class="row row-cols-2">
+                  <div class="col">
+                    <div class="form-check">
+                      <input class="form-check-input" name="atributo" type="checkbox" id="Recuperado" value="recuperado" checked>
+                      <label class="form-check-label" for="Recuperado">Recuperado</label>
+                    </div>
+                  </div>
+                  <div class="col">
+                    <div class="form-check">
+                      <input class="form-check-input" name="atributo" type="checkbox" id="Reporte" value="fecha_reporte_web" checked>
+                      <label class="form-check-label" for="Reporte">Fecha Reporte</label>
+                    </div>
+                  </div>
+                  <!-- Repite para los 14 atributos -->
+                </div>
+                <br/>
                 <center>
                   <div class="contenedor">
                     <div class="col">
-                      <button type="submit" class="btn btn-primary submit-button">Buscar Datos</button>
+                      <button type="submit" class="btn btn-success submit-button">Exportar Datos en Excel</button>
                     </div>
                   </div>
                 </center>
-              </form><br/>
-              <h2 style="font-style:italic;">
-                Deseleccione los atributos que no desea para su Descarga de información
-              </h2><br/>
-                <form id="attributesForm" class="section-padding-left " action="download_and_send_email" method="post">
-                  <div class="row row-cols-2">
-                    <div class="col">
-                      <div class="form-check">
-                        <input class="form-check-input" name="atributo" type="checkbox" id="Departamento" value="departamento_nom" checked>
-                        <label class="form-check-label" for="Departamento">Departamento</label>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <div class="form-check">
-                        <input class="form-check-input" name="atributo" type="checkbox" id="Ciudad" value="ciudad_municipio_nom" checked>
-                        <label class="form-check-label" for="Ciudad">Ciudad</label>
-                      </div>
-                    </div>
-                    <!-- Repite para los 14 atributos -->
-                  </div>
-                  <div class="row row-cols-2">
-                    <div class="col">
-                      <div class="form-check">
-                        <input class="form-check-input" name="atributo" type="checkbox" id="edad" value="edad" checked>
-                        <label class="form-check-label" for="Edad">Edad</label>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <div class="form-check">
-                        <input class="form-check-input" name="atributo" type="checkbox" id="sexo" value="sexo" checked>
-                        <label class="form-check-label" for="Sexo">Sexo</label>
-                      </div>
-                    </div>
-                    <!-- Repite para los 14 atributos -->
-                  </div>
-                  <div class="row row-cols-2">
-                    <div class="col">
-                      <div class="form-check">
-                        <input class="form-check-input" name="atributo" type="checkbox" id="Contagio" value="fuente_tipo_contagio" checked>
-                        <label class="form-check-label" for="Contagio">Fuente Contagio</label>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <div class="form-check">
-                        <input class="form-check-input" name="atributo" type="checkbox" id="Ubicacion" value="ubicacion" checked>
-                        <label class="form-check-label" for="Ubicacion">Ubicación</label>
-                      </div>
-                    </div>
-                    <!-- Repite para los 14 atributos -->
-                  </div>
-                  <div class="row row-cols-2">
-                    <div class="col">
-                      <div class="form-check">
-                        <input class="form-check-input" name="atributo" type="checkbox" id="Estado" value="estado" checked>
-                        <label class="form-check-label" for="Estado">Estado</label>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <div class="form-check">
-                        <input class="form-check-input" name="atributo" type="checkbox" id="pais_viaje" value="pais_viajo_1_nom" checked>
-                        <label class="form-check-label" for="pais_viaje">Pais que Viajo</label>
-                      </div>
-                    </div>
-                    <!-- Repite para los 14 atributos -->
-                  </div>
-                  <div class="row row-cols-2">
-                    <div class="col">
-                      <div class="form-check">
-                        <input class="form-check-input" name="atributo" type="checkbox" id="Recuperado" value="recuperado" checked>
-                        <label class="form-check-label" for="Recuperado">Recuperado</label>
-                      </div>
-                    </div>
-                    <div class="col">
-                      <div class="form-check">
-                        <input class="form-check-input" name="atributo" type="checkbox" id="Reporte" value="fecha_reporte_web" checked>
-                        <label class="form-check-label" for="Reporte">Fecha Reporte</label>
-                      </div>
-                    </div>
-                    <!-- Repite para los 14 atributos -->
-                  </div>
-                  <br/>
-                  <center>
-                    <div class="contenedor">
-                      <div class="col">
-                        <button type="submit" class="btn btn-success submit-button">Exportar Datos en Excel</button>
-                      </div>
-                    </div>
-                  </center>
-                </form>
-              </section>
+              </form>
+          </div>
+        </section>
       </div>
-      <!-- Segunda sección -->
-      <div class="col-md-6 align-items-center justify-content-center section-padding-top" style="height: 100vh;">
-        <!-- Contenido de la segunda sección -->
-        <section>
-          
-          <h1 style="font-size: 25px; font-weight: bold; color: #007bff;" >HISTORICO DE DATOS</h1>
+    </div>
+
+    <!-- Tercera sección: Tabla con datos -->
+    <div class="row">
+      <div class="col">
+        <section class="section">
           <div class="table-container">
-            <!-- Tabla de datos -->
+            <h2 class="mb-3">Historico de Datos</h2>
             {{ html_table | safe }}
-          </div><br/>
-          {% if mensaje %}
-          <div id="mensaje" class="alert {% if mensaje == 'El archivo fue Descargado, Correo electrónico enviado con éxito y archivo Excel adjunto.' %}alert-success{% else %}alert-danger{% endif %}" role="alert">{{ mensaje }}</div>
-          <script>
-              // Desaparecer el mensaje después de 10 segundos
-              setTimeout(function() {
-                  var mensaje = document.getElementById("mensaje");
-                  mensaje.style.display = "none";
-              }, 5000); // 10 segundos
-          </script>
-          {% endif %}
+          </div>
         </section>
       </div>
     </div>

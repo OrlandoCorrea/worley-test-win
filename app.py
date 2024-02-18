@@ -93,7 +93,7 @@ def access_login():
         if hashed_password:
             if hashed_password['passwd'] and bcrypt.checkpw(_password_.encode('utf-8'), hashed_password['passwd']):
                 session['logueado'] = True
-                return render_template('dashboard.html',html_table=html_table, departamento_list=app.config['departamento_list'], ciudad_list=app.config['ciudad_list'], edad_list=app.config['edad_list'], sexo_list=app.config['sexo_list'], tipo_contagio_list=app.config['tipo_contagio_list'], ubicacion_list=app.config['ubicacion_list'], estado_list=app.config['estado_list'], pais_viajo_list=app.config['pais_viajo_list'], recuperado_list=app.config['recuperado_list'], fecha_report_list=app.config['fecha_report_list'])
+                return render_template('probe.html',html_table=html_table, departamento_list=app.config['departamento_list'], ciudad_list=app.config['ciudad_list'], edad_list=app.config['edad_list'], sexo_list=app.config['sexo_list'], tipo_contagio_list=app.config['tipo_contagio_list'], ubicacion_list=app.config['ubicacion_list'], estado_list=app.config['estado_list'], pais_viajo_list=app.config['pais_viajo_list'], recuperado_list=app.config['recuperado_list'], fecha_report_list=app.config['fecha_report_list'])
             else:
                 return render_template('index.html', mensaje="Credenciales Incorrectas")
         else:
