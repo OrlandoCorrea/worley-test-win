@@ -65,4 +65,3 @@ jobs:
           app-name: 'worley-test-winner'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4FCB9C25611F40D3880783A564A47CB6 }}
-          startup-command: 'python app.py' # Aquí se coloca el código de inicio de la web
