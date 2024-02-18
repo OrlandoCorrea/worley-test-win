@@ -146,15 +146,21 @@ def download_and_send_email():
     df = app.config['GLOBAL_VARIABLE']
     df_filtered = df[atributos_seleccionados]
 
-    excel_file_path = 'datos_solicitados_covid19_filtrado.xlsx'
+    excel_file_path = './datos_solicitados_covid19_filtrado.xlsx'
     excel_data = df_filtered.to_excel(excel_file_path, index=False)
-    # Devuelve el archivo Excel como una respuesta de descarga
-    send_file('./datos_solicitados_covid19_filtrado.xlsx', as_attachment=True)
 
     # Guarda los datos en un archivo Excel en memoria
     excel_data_bytes = BytesIO()
     df_filtered.to_excel(excel_data_bytes, index=False)
     excel_data_bytes.seek(0)  # Reinicia el cursor al principio del archivo
+
+    # Devuelve el archivo Excel como una respuesta de descarga
+    send_file(
+        excel_data_bytes,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name='datos_solicitados_covid19_filtrado.xlsx'
+    )
 
     username = app.config['MAIL_USERNAME']
     password = app.config['MAIL_PASSWORD']
