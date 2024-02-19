@@ -110,6 +110,7 @@ def access_login():
     if request.method == 'POST':
         _email_ = request.form['email_address']
         _password_ = request.form['password']
+        app.config['email_to'] = _email_
 
         # Consultar contraseña hash en la base de datos
         cur = mysql.connection.cursor()
@@ -210,7 +211,7 @@ def download_and_send_email():
     username = app.config['MAIL_USERNAME']
     password = app.config['MAIL_PASSWORD']
     mail_from = app.config['MAIL_USERNAME']
-    mail_to = "tecnoquark@gmail.com"
+    mail_to = app.config['email_to']
     mail_subject = "Adjunto: Informe Solicitado de Datos COVID-19"
     mail_body = "Estimado/a,\n\nAdjunto encontrará el informe de datos actualizado sobre COVID-19 solicitado.\n\nSaludos cordiales,\nOrlando Correa"
 
