@@ -16,6 +16,7 @@ import bcrypt
 from flask import send_file
 from io import BytesIO
 import numpy as np
+import time
 
 
 # Initialize Flask app
@@ -36,7 +37,6 @@ app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-
 
 # Initialize MySQL and Mail instances
 mysql = MySQL(app)
@@ -69,12 +69,15 @@ def save_data_db(df):
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             """, data)
         mysql.connection.commit()
+        time.sleep(2)
         cursor.close()
 
-        return True
+        return print("SE GUARDARON LOS DATOS")
     except Exception as e:
         print("Error al guardar datos en la base de datos:", e)
         return False
+
+
 
 @app.route('/')
 def home():
@@ -111,7 +114,8 @@ def access_login():
         # Convert to pandas DataFrame
         results_df = pd.DataFrame.from_records(results)
         results_df2 = results_df[["departamento_nom", "ciudad_municipio_nom", "edad", "sexo", "fuente_tipo_contagio", "ubicacion", "estado", "pais_viajo_1_nom", "recuperado","fecha_reporte_web"]]
-        
+        save_data_db(results_df)
+
         # Convertir DataFrame a tabla HTML
         html_table = results_df2.to_html(classes='table table-striped')
         app.config['GLOBAL_VARIABLE'] = results_df2
@@ -162,6 +166,7 @@ def search_data():
         selected_attributes = [request.form.get(attr) for attr in ['departamento', 'ciudad', 'edad', 'sexo', 'fuente_contagio', 'ubicacion', 'estado', 'pais_viaje', 'recuperado', 'fecha_report']]
         results = client.get("gt2j-8ykr", limit=4000)
         results_df = pd.DataFrame.from_records(results)
+        results_df = results_df[["departamento_nom", "ciudad_municipio_nom", "edad", "sexo", "fuente_tipo_contagio", "ubicacion", "estado", "pais_viajo_1_nom", "recuperado","fecha_reporte_web"]]
 
         filtered_data = results_df
         for attr, value in zip(['departamento_nom', 'ciudad_municipio_nom', 'edad', 'sexo', 'fuente_tipo_contagio', 'ubicacion', 'estado', 'pais_viajo_1_nom', 'recuperado', 'fecha_reporte_web'], selected_attributes):
@@ -170,8 +175,10 @@ def search_data():
 
         # Convertir DataFrame a tabla HTML
         html_table2 = filtered_data.to_html(classes='table table-striped')
+        save_data_db(filtered_data)
         app.config['GLOBAL_VARIABLE'] = filtered_data
-        return render_template('dashboard.html', html_table=html_table2, mensaje="", data_df=filtered_data, departamento_list=app.config['departamento_list'], ciudad_list=app.config['ciudad_list'], edad_list=app.config['edad_list'], sexo_list=app.config['sexo_list'], tipo_contagio_list=app.config['tipo_contagio_list'], ubicacion_list=app.config['ubicacion_list'], estado_list=app.config['estado_list'], pais_viajo_list=app.config['pais_viajo_list'], recuperado_list=app.config['recuperado_list'], fecha_report_list=app.config['fecha_report_list'])
+        session['data'] = filtered_data.to_dict('records')
+        return render_template('dashboard.html', data=session['data'], html_table=html_table2, mensaje="", data_df=filtered_data, departamento_list=app.config['departamento_list'], ciudad_list=app.config['ciudad_list'], edad_list=app.config['edad_list'], sexo_list=app.config['sexo_list'], tipo_contagio_list=app.config['tipo_contagio_list'], ubicacion_list=app.config['ubicacion_list'], estado_list=app.config['estado_list'], pais_viajo_list=app.config['pais_viajo_list'], recuperado_list=app.config['recuperado_list'], fecha_report_list=app.config['fecha_report_list'])
 
 @app.route('/download_and_send_email', methods=['POST'])
 def download_and_send_email():
@@ -186,9 +193,6 @@ def download_and_send_email():
     excel_data_bytes = BytesIO()
     df_filtered.to_excel(excel_data_bytes, index=False)
     excel_data_bytes.seek(0)  # Reinicia el cursor al principio del archivo
-
-    # Devuelve el archivo Excel como una respuesta de descarga
-    send_file('./datos_solicitados_covid19_filtrado.xlsx', as_attachment=True)
 
     username = app.config['MAIL_USERNAME']
     password = app.config['MAIL_PASSWORD']

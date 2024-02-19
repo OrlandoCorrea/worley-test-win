@@ -281,11 +281,15 @@
                 </div>
                 <br/>
                 <center>
-                  <div class="contenedor">
+                  <div class="row">
                     <div class="col">
                       <button type="submit" class="btn btn-success submit-button">Exportar Datos en Excel</button>
                     </div>
-                  </div>
+                    <br/>
+                    <div class="col">
+                      <a href="https://app.powerbi.com/view?r=eyJrIjoiZTQ4N2Q3YTItMzJjNC00NDRkLWI3MTEtN2UxY2Y3Yzk3YzExIiwidCI6Ijc2ZjE1Mjc0LWRlYTYtNDMzNS05NDQyLTYyNzhkOTk1MTNjOSIsImMiOjR9" class="btn btn-primary">Visualizar datos en PowerBI</a>
+                    </div>
+                </div>
                 </center>
               </form>
           </div>
@@ -295,15 +299,20 @@
 
     <!-- Tercera sección: Tabla con datos -->
     <div class="row">
-      <div class="col">
+      <div class="col-md-6">
         <section class="section">
-          <div class="table-container">
-            <h2 class="mb-3">Historico de Datos</h2>
-            {{ html_table | safe }}
-          </div>
+          <div class="sub-section">
+            <iframe title="informe_powerbi_worley_winner" width="600" height="486" src="https://app.powerbi.com/view?r=eyJrIjoiZTQ4N2Q3YTItMzJjNC00NDRkLWI3MTEtN2UxY2Y3Yzk3YzExIiwidCI6Ijc2ZjE1Mjc0LWRlYTYtNDMzNS05NDQyLTYyNzhkOTk1MTNjOSIsImMiOjR9" frameborder="0" allowFullScreen="true"></iframe>        </section>
+      </div>
+      <div class="col-md-6">
+        <section class="section">
+          <div class="sub-section">
+            <div class="table-container">
+              <h2 class="mb-3">Historico de Datos</h2>
+              {{ html_table | safe }}
+            </div>        </div>
         </section>
       </div>
     </div>
-  </div>
 </body>
 </html>
