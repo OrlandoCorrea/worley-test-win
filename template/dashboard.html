@@ -85,7 +85,7 @@
       </div>
     </div>
     {% if mensaje %}
-    <div id="mensaje" class="alert {% if mensaje == 'El archivo fue Descargado, Correo electrónico enviado con éxito y archivo Excel adjunto.' %}alert-success{% else %}alert-danger{% endif %}" role="alert">{{ mensaje }}</div>
+    <div id="mensaje" class="alert {% if mensaje == 'Correo electrónico enviado con éxito y archivo Excel adjunto.' %}alert-success{% else %}alert-danger{% endif %}" role="alert">{{ mensaje }}</div>
     <script>
         // Desaparecer el mensaje después de 10 segundos
         setTimeout(function() {
