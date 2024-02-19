@@ -15,6 +15,7 @@ from email import encoders
 import bcrypt
 from flask import send_file
 from io import BytesIO
+import numpy as np
 
 
 # Initialize Flask app
@@ -36,12 +37,44 @@ app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 
+
 # Initialize MySQL and Mail instances
 mysql = MySQL(app)
 mail = Mail(app)
 
 # Initialize Socrata client
 client = Socrata("www.datos.gov.co", None)
+
+def save_data_db(df):
+    try:
+        # Limpiar la tabla antes de insertar nuevos datos
+        cursor = mysql.connection.cursor()
+        cursor.execute("TRUNCATE TABLE `worley-schema-covid19`.`data_temp`")
+        mysql.connection.commit()
+        cursor.close()
+
+        # Reemplazar valores nan por None en el DataFrame
+        df.fillna(value=np.nan, inplace=True)
+        df.replace({np.nan: None}, inplace=True)
+
+        # Convertir DataFrame a lista de tuplas
+        data = [tuple(row) for _, row in df.iterrows()]
+
+        # Insertar datos en la tabla
+        cursor = mysql.connection.cursor()
+        cursor.executemany("""
+            INSERT INTO `worley-schema-covid19`.`data_temp` 
+            (`departamento`, `ciudad_municipio`, `edad`, `sexo`, `fuente_tipo_contagio`, 
+            `ubicacion`, `estado`, `pais_viajo`, `recuperado`, `fecha_reporte_web`) 
+            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+            """, data)
+        mysql.connection.commit()
+        cursor.close()
+
+        return True
+    except Exception as e:
+        print("Error al guardar datos en la base de datos:", e)
+        return False
 
 @app.route('/')
 def home():
@@ -145,7 +178,7 @@ def download_and_send_email():
     atributos_seleccionados = request.form.getlist('atributo')
     df = app.config['GLOBAL_VARIABLE']
     df_filtered = df[atributos_seleccionados]
-
+    save_data_db(df)
     excel_file_path = './datos_solicitados_covid19_filtrado.xlsx'
     excel_data = df_filtered.to_excel(excel_file_path, index=False)
 
