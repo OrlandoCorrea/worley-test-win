@@ -24,17 +24,17 @@ app.secret_key = os.urandom(24)
 # Load environment variables
 load_dotenv()
 
-app.config['MYSQL_HOST'] ='worley-db-covid19.mysql.database.azure.com'
-app.config['MYSQL_USER'] ='admin_ofcv'
-app.config['MYSQL_PASSWORD'] ='Clave123'
+app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST')
+app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER')
+app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD')
 app.config['MYSQL_DB'] ='worley-schema-covid19'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_USERNAME'] = 'ocorreave@gmail.com'
-app.config['MAIL_PASSWORD'] = 'qhwzeymqquskvqho'
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 
 # Initialize MySQL and Mail instances
 mysql = MySQL(app)
