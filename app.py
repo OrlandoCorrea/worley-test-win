@@ -1,3 +1,4 @@
+# Importación de librerías necesarias
 import os
 import smtplib
 import ssl
@@ -18,33 +19,35 @@ from io import BytesIO
 import numpy as np
 import time
 
-
-# Initialize Flask app
+# Inicialización de la aplicación Flask
 app = Flask(__name__, template_folder='template')
 app.secret_key = os.urandom(24)
 
-# Load environment variables
+# Carga de variables de entorno desde el archivo .env
 load_dotenv()
 
+# Configuración de la base de datos MySQL
 app.config['MYSQL_HOST'] = os.environ.get('MYSQL_HOST')
 app.config['MYSQL_USER'] = os.environ.get('MYSQL_USER')
 app.config['MYSQL_PASSWORD'] = os.environ.get('MYSQL_PASSWORD')
 app.config['MYSQL_DB'] ='worley-schema-covid19'
 app.config['MYSQL_CURSORCLASS'] = 'DictCursor'
 
+# Configuración del servidor de correo
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
 
-# Initialize MySQL and Mail instances
+# Inicialización de instancias de MySQL y Mail
 mysql = MySQL(app)
 mail = Mail(app)
 
-# Initialize Socrata client
+# Inicialización del cliente Socrata para acceder a datos abiertos
 client = Socrata("www.datos.gov.co", None)
 
+# Función para guardar datos en la base de datos MySQL
 def save_data_db(df):
     try:
         # Limpiar la tabla antes de insertar nuevos datos
@@ -53,7 +56,7 @@ def save_data_db(df):
         mysql.connection.commit()
         cursor.close()
 
-        # Reemplazar valores nan por None en el DataFrame
+        # Reemplazar valores NaN por None en el DataFrame
         df.fillna(value=np.nan, inplace=True)
         df.replace({np.nan: None}, inplace=True)
 
@@ -77,19 +80,22 @@ def save_data_db(df):
         print("Error al guardar datos en la base de datos:", e)
         return False
 
-
-
+# Ruta para la página de inicio
 @app.route('/')
 def home():
     return render_template('index.html')
 
+# Ruta para la página de registro
 @app.route('/registro')
 def registro():
     return render_template('register.html')
 
+# Ruta para el dashboard principal
 @app.route('/dashboard')
 def dashboard():
+    # Verificar si el usuario está logueado
     if 'logueado' in session and session['logueado']:
+        # Obtener datos de la API Socrata
         results = client.get("gt2j-8ykr", limit=4000)
         results_df = pd.DataFrame.from_records(results)
         filtered_data = results_df[["departamento_nom", "ciudad_municipio_nom", "edad", "sexo", "fuente_tipo_contagio", "ubicacion", "estado", "pais_viajo_1_nom", "recuperado", "fecha_reporte_web"]]
@@ -98,12 +104,14 @@ def dashboard():
     else:
         return render_template('index.html', mensaje="Por favor, inicie sesión.")
 
+# Ruta para procesar el acceso al login
 @app.route('/access_login', methods=["POST"])
 def access_login():
     if request.method == 'POST':
         _email_ = request.form['email_address']
         _password_ = request.form['password']
 
+        # Consultar contraseña hash en la base de datos
         cur = mysql.connection.cursor()
         cur.execute('SELECT passwd FROM `worley-schema-covid19`.users WHERE email = %s', (_email_,))
         hashed_password = cur.fetchone()
@@ -111,13 +119,15 @@ def access_login():
         salt = bcrypt.gensalt()
         results = client.get("gt2j-8ykr", limit=4000)
 
-        # Convert to pandas DataFrame
+        # Convertir a DataFrame de Pandas
         results_df = pd.DataFrame.from_records(results)
         results_df2 = results_df[["departamento_nom", "ciudad_municipio_nom", "edad", "sexo", "fuente_tipo_contagio", "ubicacion", "estado", "pais_viajo_1_nom", "recuperado","fecha_reporte_web"]]
         save_data_db(results_df)
 
         # Convertir DataFrame a tabla HTML
         html_table = results_df2.to_html(classes='table table-striped')
+
+        # Guardar variables de los Dropdowns
         app.config['GLOBAL_VARIABLE'] = results_df2
         app.config['departamento_list'] = sorted(results_df2['departamento_nom'].astype(str).unique())
         app.config['ciudad_list'] = sorted(results_df2['ciudad_municipio_nom'].astype(str).unique())
@@ -139,6 +149,7 @@ def access_login():
         else:
             return render_template('index.html', mensaje="Credenciales Incorrectas")
             
+# Ruta para procesar el registro de un nuevo usuario
 @app.route('/register_new', methods=["POST"])
 def register_new():
     if request.method == 'POST':
@@ -160,6 +171,7 @@ def register_new():
     else:
         return render_template('register.html', mensaje="Credenciales Incorrectas")
 
+# Ruta para procesar la búsqueda de datos
 @app.route('/search_data', methods=["POST"])
 def search_data():
     if request.method == "POST":
@@ -180,6 +192,7 @@ def search_data():
         session['data'] = filtered_data.to_dict('records')
         return render_template('dashboard.html', data=session['data'], html_table=html_table2, mensaje="", data_df=filtered_data, departamento_list=app.config['departamento_list'], ciudad_list=app.config['ciudad_list'], edad_list=app.config['edad_list'], sexo_list=app.config['sexo_list'], tipo_contagio_list=app.config['tipo_contagio_list'], ubicacion_list=app.config['ubicacion_list'], estado_list=app.config['estado_list'], pais_viajo_list=app.config['pais_viajo_list'], recuperado_list=app.config['recuperado_list'], fecha_report_list=app.config['fecha_report_list'])
 
+# Ruta para descargar datos y enviar correo electrónico
 @app.route('/download_and_send_email', methods=['POST'])
 def download_and_send_email():
     atributos_seleccionados = request.form.getlist('atributo')
